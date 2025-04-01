@@ -1,0 +1,138 @@
+/* wwwroot/css/site.css */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+    padding-bottom: 6rem; /* Ajouter un espace en bas du contenu */
+}
+
+/* Styles personnalisés pour la boutique */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.product-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+.btn-outline-primary {
+    border-width: 2px;
+}
+
+.form-floating > label {
+    padding-left: 1rem;
+}
+
+.form-floating > .form-control {
+    padding-left: 1rem;
+}
+
+/* Animation pour les alertes */
+.alert-dismissible {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Styles pour les badges */
+.badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.5rem;
+}
+
+/* Styles pour la page produit */
+.product-image-container {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    overflow: hidden;
+}
+
+.product-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* Styles pour le panier */
+.cart-item {
+    transition: background-color 0.3s ease;
+}
+
+    .cart-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+/* Animations pour les boutons */
+.btn {
+    transition: all 0.3s ease;
+}
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+/* Footer styles */
+.footer {
+    margin-top: auto;
+    position: relative; /* Changez de 'fixed' à 'relative' */
+    width: 100%;
+    z-index: 1000;
+}
+/* Styles pour le bouton retour en haut */
+#back-to-top {
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+    #back-to-top.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    #back-to-top:not(.show) {
+        transform: translateY(20px);
+        pointer-events: none;
+    }

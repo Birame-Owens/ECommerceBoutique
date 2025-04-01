@@ -1,0 +1,175 @@
+﻿@model ECommerceBoutique.Models.ViewModels.CheckoutViewModel
+@{
+    ViewData["Title"] = "Paiement";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Paiement</h1>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Informations de livraison</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Checkout" asp-action="ProcessPayment" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="FirstName" class="form-control" placeholder="Prénom" required />
+                                    <label asp-for="FirstName">Prénom</label>
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="LastName" class="form-control" placeholder="Nom" required />
+                                    <label asp-for="LastName">Nom</label>
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Email" class="form-control" placeholder="Email" required readonly />
+                                    <label asp-for="Email">Email</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Address" class="form-control" placeholder="Adresse" required />
+                                    <label asp-for="Address">Adresse</label>
+                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="City" class="form-control" placeholder="Ville" required />
+                                    <label asp-for="City">Ville</label>
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="PostalCode" class="form-control" placeholder="Code postal" required />
+                                    <label asp-for="PostalCode">Code postal</label>
+                                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Country" class="form-control" placeholder="Pays" required />
+                                    <label asp-for="Country">Pays</label>
+                                    <span asp-validation-for="Country" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4 mb-4 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Informations de paiement</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Vous serez redirigé vers Stripe pour finaliser votre paiement de manière sécurisée.
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/visa-6850402_1280.png" alt="Payment methods" class="img-fluid" style="max-height: 40px;">
+                                    <img src="https://cdn.pixabay.com/photo/2021/12/06/13/48/mastercard-6850403_1280.png" alt="Payment methods" class="img-fluid ms-3" style="max-height: 40px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Cart" asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Retour au panier
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-lock-fill"></i> Procéder au paiement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Résumé de la commande -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Résumé de la commande</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @if (Model.CartViewModel.CartItems != null)
+                        {
+                            @foreach (var item in Model.CartViewModel.CartItems)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-start py-3">
+                                    <div class="d-flex">
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" class="img-fluid rounded me-2" style="width: 50px; height: 50px; object-fit: cover;" alt="@item.ProductName">
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-2" style="width: 50px; height: 50px;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                        }
+                                        <div>
+                                            <h6 class="mb-0">@item.ProductName</h6>
+                                            <small class="text-muted">Qté: @item.Quantity</small>
+                                        </div>
+                                    </div>
+                                    <span class="text-end fw-semibold">@item.Total.ToString("C")</span>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Sous-total</span>
+                        <span>@Model.CartViewModel.SubTotal.ToString("C")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Frais de livraison</span>
+                        <span>Gratuit</span>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-bold">Total</span>
+                        <span class="fw-bold text-primary fs-5">@Model.CartViewModel.SubTotal.ToString("C")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title">Informations de sécurité</h6>
+                    <p class="card-text small">
+                        Toutes vos données sont protégées par un cryptage SSL. Nous ne stockons jamais vos informations de carte de crédit.
+                    </p>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-shield-lock-fill text-success fs-4 me-2"></i>
+                        <span class="small">Paiement 100% sécurisé</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

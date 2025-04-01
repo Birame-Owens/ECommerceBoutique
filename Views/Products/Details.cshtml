@@ -1,0 +1,96 @@
+﻿@model ECommerceBoutique.Models.Entities.Product
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Accueil</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index">Produits</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Image du produit -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Title" style="max-height: 400px; object-fit: contain;">
+                }
+                else
+                {
+                    <div class="bg-light text-center py-5" style="height: 400px;">
+                        <i class="bi bi-image fs-1 text-muted mt-5"></i>
+                        <p class="text-muted">Aucune image disponible</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Détails du produit -->
+        <div class="col-md-6">
+            <h1 class="mb-3">@Model.Title</h1>
+
+            <div class="mb-3">
+                <span class="badge bg-secondary">@(Model.Category?.Name ?? "Non catégorisé")</span>
+                <span class="badge bg-info text-dark ms-2">Vendeur: @(Model.Vendor?.UserName ?? "Inconnu")</span>
+            </div>
+
+            <h3 class="text-primary mb-4">@Model.Price.ToString("C")</h3>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+
+            <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                <input type="hidden" name="productId" value="@Model.Id">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Quantité</span>
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="10">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-cart-plus"></i> Ajouter au panier
+                    </button>
+                </div>
+            </form>
+
+            @if (User.Identity?.Name == Model.Vendor?.Email || User.IsInRole("Administrator"))
+            {
+                <div class="d-flex gap-2 mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                </div>
+            }
+
+            <div class="mt-4">
+                <h5>Informations supplémentaires</h5>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Date d'ajout
+                        <span>@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ID du produit
+                        <span>@Model.Id</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boutons de navigation -->
+    <div class="mt-5 d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>

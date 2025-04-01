@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Importer des produits";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-cloud-download me-2"></i>Importer des produits depuis l'API</h4>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        Cette fonctionnalité vous permet d'importer automatiquement des produits depuis une API externe.
+                        Les produits importés seront ajoutés à votre catalogue avec votre compte comme vendeur.
+                    </p>
+
+                    <form asp-action="ImportFromApi" method="post">
+                        <div class="mb-3">
+                            <label for="apiUrl" class="form-label">URL de l'API (optionnel)</label>
+                            <input type="text" id="apiUrl" name="apiUrl" class="form-control"
+                                   placeholder="Laissez vide pour utiliser l'API par défaut (FakeStore API)" />
+                            <small class="form-text text-muted">
+                                Par défaut, nous utilisons FakeStore API pour importer des produits de démonstration.
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            L'importation peut prendre quelques instants. Veuillez patienter après avoir cliqué sur le bouton d'importation.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cloud-download me-1"></i>Importer des produits
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,139 @@
+﻿@model List<ECommerceBoutique.Models.ViewModels.InvoiceViewModel>
+@{
+    ViewData["Title"] = "Factures";
+    bool isVendor = ViewBag.IsVendor ?? false;
+    decimal totalAmount = ViewBag.TotalAmount ?? 0;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@(isVendor ? "Mes ventes" : "Mes factures")</h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h4 class="mb-3">Récapitulatif</h4>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">@(isVendor ? "Total des ventes" : "Total des achats")</h6>
+                            <h3 class="text-primary">@totalAmount.ToString("C")</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Nombre de transactions</h6>
+                            <h3>@Model.Count</h3>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Dernière transaction</h6>
+                            <h5>
+                                @(Model.Any()
+                                    ? Model.OrderByDescending(i => i.IssueDate).First().IssueDate.ToString("dd/MM/yyyy")
+                                    : "Aucune")
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body">
+                    <h4 class="mb-3">Actions</h4>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-bag"></i> @(isVendor ? "Mes produits" : "Continuer les achats")
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-house"></i> Accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">@(isVendor ? "Historique des ventes" : "Historique des achats")</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Facture #</th>
+                                <th>Date</th>
+                                @if (isVendor)
+                                {
+                                    <th>Client</th>
+                                }
+                                <th>Montant</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var invoice in Model)
+                            {
+                                <tr>
+                                    <td><strong>@invoice.InvoiceNumber</strong></td>
+                                    <td>@invoice.IssueDate.ToString("dd/MM/yyyy")</td>
+                                    @if (isVendor)
+                                    {
+                                        <td>@invoice.CustomerName</td>
+                                    }
+                                    <td class="text-end">@invoice.Total.ToString("C")</td>
+                                    <td>
+                                        @if (invoice.Status == "Payée")
+                                        {
+                                            <span class="badge bg-success">@invoice.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">@invoice.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-outline-primary">
+                                                <i class="bi bi-eye"></i> Détails
+                                            </a>
+                                            <a asp-action="Download" asp-route-id="@invoice.Id" class="btn btn-outline-secondary">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-receipt text-muted" style="font-size: 4rem;"></i>
+            </div>
+            <h3>Aucune @(isVendor ? "vente" : "facture") trouvée</h3>
+            <p class="text-muted">
+                @if (isVendor)
+                {
+                    <span>Vous n'avez pas encore vendu de produits.</span>
+                }
+                else
+                {
+                    <span>Vous n'avez pas encore passé de commande.</span>
+                }
+            </p>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary mt-3">
+                <i class="bi bi-shop"></i> @(isVendor ? "Gérer mes produits" : "Parcourir les produits")
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,160 @@
+﻿@model ECommerceBoutique.Models.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Panier";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Votre panier</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model.CartItems != null && Model.CartItems.Any())
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Articles (@Model.TotalItems)</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle mb-0">
+                                <thead class="text-muted">
+                                    <tr>
+                                        <th scope="col" width="80"></th>
+                                        <th scope="col">Produit</th>
+                                        <th scope="col" width="120">Prix</th>
+                                        <th scope="col" width="120">Quantité</th>
+                                        <th scope="col" width="120">Total</th>
+                                        <th scope="col" width="80"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.CartItems)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" class="img-fluid rounded" style="width: 60px; height: 60px; object-fit: cover;" alt="@item.ProductName">
+                                                }
+                                                else
+                                                {
+                                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                                        <i class="bi bi-image text-muted"></i>
+                                                    </div>
+                                                }
+                                            </td>
+                                            <td>
+                                                <h6 class="mb-0">@item.ProductName</h6>
+                                                <small class="text-muted">@item.CategoryName</small>
+                                            </td>
+                                            <td>@item.Price.ToString("C")</td>
+                                            <td>
+                                                <form asp-action="UpdateQuantity" method="post">
+                                                    <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="number" name="quantity" min="1" max="10" class="form-control text-center" value="@item.Quantity" />
+                                                        <button type="submit" class="btn btn-outline-secondary">
+                                                            <i class="bi bi-arrow-repeat"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                            <td class="text-end fw-bold">@item.Total.ToString("C")</td>
+                                            <td>
+                                                <form asp-action="RemoveItem" method="post">
+                                                    <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white py-3">
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Continuer les achats
+                            </a>
+                            <form asp-action="Clear" method="post">
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Êtes-vous sûr de vouloir vider votre panier?');">
+                                    <i class="bi bi-trash"></i> Vider le panier
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Résumé de la commande</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Sous-total</span>
+                            <span>@Model.SubTotal.ToString("C")</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Frais de livraison</span>
+                            <span>Gratuit</span>
+                        </div>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="fw-bold">Total</span>
+                            <span class="fw-bold text-primary fs-5">@Model.SubTotal.ToString("C")</span>
+                        </div>
+                        <div class="d-grid">
+                            <a asp-controller="Cart" asp-action="Checkout" class="btn btn-primary">
+                                <i class="bi bi-credit-card"></i> Procéder au paiement
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Besoin d'aide?</h6>
+                        <p class="card-text small">
+                            Notre équipe de support client est disponible 7j/7 pour vous aider avec vos questions.
+                        </p>
+                        <a href="#" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-question-circle"></i> Centre d'aide
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-cart-x fs-1 text-muted mb-3"></i>
+            <h3>Votre panier est vide</h3>
+            <p class="text-muted mb-4">Vous n'avez pas encore ajouté de produits à votre panier.</p>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-shop"></i> Parcourir les produits
+            </a>
+        </div>
+    }
+</div>
