@@ -1,0 +1,62 @@
+﻿@model ECommerceBoutique.Models.Entities.Product
+@{
+    ViewData["Title"] = "Supprimer le produit";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-trash me-2"></i>Confirmer la suppression</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="mb-4">Êtes-vous sûr de vouloir supprimer ce produit ?</h5>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" />
+                            }
+                            else
+                            {
+                                <div class="bg-light text-center p-5 rounded">
+                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Titre</dt>
+                                <dd class="col-sm-8">@Model.Title</dd>
+
+                                <dt class="col-sm-4">Description</dt>
+                                <dd class="col-sm-8">@Model.Description</dd>
+
+                                <dt class="col-sm-4">Prix</dt>
+                                <dd class="col-sm-8">@Model.Price.ToString("C")</dd>
+
+                                <dt class="col-sm-4">Catégorie</dt>
+                                <dd class="col-sm-8">@(Model.Category?.Name ?? "Non spécifiée")</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Cette action est <strong>irréversible</strong>. La suppression du produit entraînera également la suppression de toutes les références à ce produit dans les paniers des utilisateurs.
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Annuler</a>
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

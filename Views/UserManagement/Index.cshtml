@@ -1,0 +1,122 @@
+﻿<!-- Views/UserManagement/Index.cshtml -->
+@model List<ECommerceBoutique.Models.ViewModels.UserRoleViewModel>
+@{
+    ViewData["Title"] = "Gestion des utilisateurs";
+}
+
+<div class="container mt-4">
+    <h2>Gestion des utilisateurs</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Actions groupées</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-2">
+                <form asp-action="ImportApiUsers" method="post">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-cloud-download me-2"></i>Importer des utilisateurs API
+                    </button>
+                </form>
+
+                <form asp-action="DeleteApiUsers" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer tous les utilisateurs API ?');">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Supprimer tous les utilisateurs API
+                    </button>
+                </form>
+
+                <a asp-action="ApiUserCredentials" class="btn btn-info">
+                    <i class="bi bi-key me-2"></i>Voir les identifiants des utilisateurs API
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Utilisateurs et rôles</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email</th>
+                            <th>Vendeur</th>
+                            <th>Administrateur</th>
+                            <th>Mot de passe API</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" @(user.IsVendor ? "checked" : "") disabled>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" @(user.IsAdmin ? "checked" : "") disabled>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (user.IsApiUser && !string.IsNullOrEmpty(user.OriginalApiPassword))
+                                    {
+                                        <code>@user.OriginalApiPassword</code>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <form asp-action="ToggleVendorRole" method="post" class="me-2">
+                                            <input type="hidden" name="userId" value="@user.UserId" />
+                                            <input type="hidden" name="isVendor" value="@(!user.IsVendor)" />
+                                            <button type="submit" class="btn btn-sm @(user.IsVendor ? "btn-warning" : "btn-success")">
+                                                @(user.IsVendor ? "Retirer vendeur" : "Faire vendeur")
+                                            </button>
+                                        </form>
+
+                                        @if (!user.IsAdmin)
+                                        {
+                                            <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                                <input type="hidden" name="userId" value="@user.UserId" />
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i> Supprimer
+                                                </button>
+                                            </form>
+                                        }
+
+                                        <a asp-action="Details" asp-route-id="@user.UserId" class="btn btn-sm btn-info ms-2">
+                                            <i class="bi bi-info-circle"></i> Détails
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

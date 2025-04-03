@@ -3,70 +3,96 @@
     ViewData["Title"] = "Connexion";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-5">
-            <div class="card shadow">
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Connexion</h4>
+                    <h4>Connexion</h4>
                 </div>
                 <div class="card-body">
                     <form asp-action="Login" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
                         <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Email" class="form-control" placeholder="Email" />
-                            <label asp-for="Email"></label>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
-                        <div class="form-floating mb-3">
-                            <input asp-for="Password" class="form-control" placeholder="Mot de passe" />
-                            <label asp-for="Password"></label>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Mot de passe</label>
+                            <input asp-for="Password" class="form-control" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
-                        <div class="form-check mb-3">
+                        <div class="mb-3 form-check">
                             <input asp-for="RememberMe" class="form-check-input" />
-                            <label asp-for="RememberMe" class="form-check-label"></label>
+                            <label asp-for="RememberMe" class="form-check-label">Se souvenir de moi</label>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-box-arrow-in-right"></i> Se connecter
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Se connecter</button>
                     </form>
-                </div>
-                <div class="card-footer text-center">
-                    <p class="mb-0">
-                        Vous n'avez pas de compte?
-                        <a asp-action="Register" class="text-primary fw-bold">Inscription</a>
-                    </p>
+
+                    <div class="mt-3 text-center">
+                        <p>Pas encore de compte ? <a asp-action="Register">Inscrivez-vous</a></p>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Section de démonstration -->
-            <div class="mt-4 p-3 border rounded bg-light">
-                <h5 class="mb-3">Comptes de démonstration:</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-2">
-                            <div class="card-body p-2">
-                                <h6 class="card-title">Client</h6>
-                                <p class="card-text mb-1"><small>Email: client@example.com</small></p>
-                                <p class="card-text mb-0"><small>Mot de passe: Client123!</small></p>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>Comptes de démonstration</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="border p-3 rounded">
+                                <h5 class="border-bottom pb-2">Client</h5>
+                                <p><strong>Email:</strong> client@example.com</p>
+                                <p><strong>Mot de passe:</strong> Client123!</p>
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100"
+                                        onclick="fillLoginForm('client@example.com', 'Client123!')">
+                                    Utiliser ce compte
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border p-3 rounded">
+                                <h5 class="border-bottom pb-2">Vendeur</h5>
+                                <p><strong>Email:</strong> vendor@example.com</p>
+                                <p><strong>Mot de passe:</strong> Vendor123!</p>
+                                <button type="button" class="btn btn-sm btn-outline-success w-100"
+                                        onclick="fillLoginForm('vendor@example.com', 'Vendor123!')">
+                                    Utiliser ce compte
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card mb-2">
-                            <div class="card-body p-2">
-                                <h6 class="card-title">Vendeur</h6>
-                                <p class="card-text mb-1"><small>Email: vendor@example.com</small></p>
-                                <p class="card-text mb-0"><small>Mot de passe: Vendor123!</small></p>
-                            </div>
+
+                    <div class="alert alert-warning mt-4">
+                        <h5 class="alert-heading">Note pour les tests</h5>
+                        <p>Vous pouvez également tester avec les utilisateurs API importés. Leurs mots de passe sont visibles sur la page "Gestion des utilisateurs" accessible par les administrateurs.</p>
+                    </div>
+
+                    <div class="border p-3 rounded mt-3">
+                        <h5 class="border-bottom pb-2">Utilisateurs API (exemples)</h5>
+                        <div class="mb-2">
+                            <p><strong>Email:</strong> sophia.brown@x.dummyjson.com</p>
+                            <button type="button" class="btn btn-sm btn-outline-info w-100"
+                                    onclick="fillLoginForm('sophia.brown@x.dummyjson.com', 'sophiabpass')">
+                                Utiliser cet utilisateur
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <p><strong>Email:</strong> olivia.wilson@x.dummyjson.com</p>
+                            <button type="button" class="btn btn-sm btn-outline-info w-100"
+                                    onclick="fillLoginForm('olivia.wilson@x.dummyjson.com', 'oliviawpass')">
+                                Utiliser cet utilisateur
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -76,5 +102,13 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillLoginForm(email, password) {
+            document.getElementById('Email').value = email;
+            document.getElementById('Password').value = password;
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

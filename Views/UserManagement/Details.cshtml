@@ -1,0 +1,97 @@
+﻿@model ECommerceBoutique.Models.ViewModels.UserDetailViewModel
+@{
+    ViewData["Title"] = "Détails de l'utilisateur";
+}
+
+<div class="container mt-4">
+    <h1>Détails de l'utilisateur</h1>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4>Informations personnelles</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Nom d'utilisateur</dt>
+                        <dd class="col-sm-8">@Model.UserName</dd>
+
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Prénom</dt>
+                        <dd class="col-sm-8">@Model.FirstName</dd>
+
+                        <dt class="col-sm-4">Nom</dt>
+                        <dd class="col-sm-8">@Model.LastName</dd>
+
+                        <dt class="col-sm-4">Téléphone</dt>
+                        <dd class="col-sm-8">@Model.PhoneNumber</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Adresse</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+
+                        <dt class="col-sm-4">Ville</dt>
+                        <dd class="col-sm-8">@Model.City</dd>
+
+                        <dt class="col-sm-4">Code postal</dt>
+                        <dd class="col-sm-8">@Model.PostalCode</dd>
+
+                        <dt class="col-sm-4">Pays</dt>
+                        <dd class="col-sm-8">@Model.Country</dd>
+
+                        <dt class="col-sm-4">Email confirmé</dt>
+                        <dd class="col-sm-8">@(Model.EmailConfirmed ? "Oui" : "Non")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h4>Rôles</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.Roles != null && Model.Roles.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var role in Model.Roles)
+                    {
+                        <li class="list-group-item">@role</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Aucun rôle attribué.</p>
+            }
+        </div>
+    </div>
+
+    @if (Model.IsApiUser)
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-warning text-dark">
+                <h4>Informations API</h4>
+            </div>
+            <div class="card-body">
+                <p>Cet utilisateur a été importé depuis l'API DummyJSON.</p>
+                @if (!string.IsNullOrEmpty(Model.OriginalApiPassword))
+                {
+                    <div class="alert alert-info">
+                        <strong>Mot de passe original de l'API:</strong> <code>@Model.OriginalApiPassword</code>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>

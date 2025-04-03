@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Administration";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Panneau d'administration</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Importation des utilisateurs</h4>
+        </div>
+        <div class="card-body">
+            <p>Importer les utilisateurs depuis l'API DummyJSON.</p>
+            <a asp-action="ImportUsers" class="btn btn-primary">
+                <i class="bi bi-cloud-download me-2"></i>Importer les utilisateurs
+            </a>
+        </div>
+    </div>
+</div>

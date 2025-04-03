@@ -220,7 +220,100 @@ namespace ECommerceBoutique.Controllers
 
             return View(detailViewModel);
         }
+        // GET: Invoice/VendorSales
+        [Authorize(Roles = "Vendor")]
+        public async Task<IActionResult> VendorSales()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
+            // Vérifier que l'utilisateur est bien un vendeur
+            if (!user.IsVendor)
+            {
+                return Forbid();
+            }
+
+            // Liste des commandes où le vendeur a des produits
+            var vendorOrderIds = await _context.OrderItems
+                .Where(oi => oi.VendorId == user.Id)
+                .Select(oi => oi.OrderId)
+                .Distinct()
+                .ToListAsync();
+
+            // Récupérer les commandes complètes
+            var vendorSales = new List<VendorSaleViewModel>();
+
+            // Utiliser une projection pour éviter les erreurs CS8620
+            foreach (var orderId in vendorOrderIds)
+            {
+                var order = await _context.Orders
+                    .Select(o => new Order
+                    {
+                        Id = o.Id,
+                        OrderDate = o.OrderDate,
+                        Status = o.Status,
+                        Total = o.Total,
+                        UserId = o.UserId
+                    })
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
+
+                if (order == null) continue;
+
+                // Récupérer les articles de cette commande pour ce vendeur
+                var orderItems = await _context.OrderItems
+                    .Where(oi => oi.OrderId == orderId && oi.VendorId == user.Id)
+                    .Select(oi => new OrderItem
+                    {
+                        Id = oi.Id,
+                        OrderId = oi.OrderId,
+                        ProductId = oi.ProductId,
+                        Product = new Product
+                        {
+                            Id = oi.Product.Id,
+                            Title = oi.Product.Title,
+                            Price = oi.Product.Price,
+                            ImageUrl = oi.Product.ImageUrl
+                        },
+                        Quantity = oi.Quantity,
+                        Price = oi.Price,
+                        VendorId = oi.VendorId
+                    })
+                    .ToListAsync();
+
+                // Récupérer les informations du client
+                User? customer = null;
+                if (order.UserId != null)
+                {
+                    customer = await _userManager.FindByIdAsync(order.UserId);
+                }
+
+                decimal vendorTotal = orderItems.Sum(oi => oi.Price * oi.Quantity);
+
+                // Créer le modèle de vue pour cette vente
+                vendorSales.Add(new VendorSaleViewModel
+                {
+                    OrderId = order.Id,
+                    OrderDate = order.OrderDate,
+                    Items = orderItems,
+                    VendorTotal = vendorTotal,
+                    CustomerName = customer != null ? $"{customer.FirstName} {customer.LastName}" : "Client inconnu",
+                    CustomerEmail = customer?.Email ?? "Email inconnu"
+                });
+            }
+
+            // Trier par date décroissante
+            vendorSales = vendorSales.OrderByDescending(vs => vs.OrderDate).ToList();
+
+            // Statistiques pour le tableau de bord
+            ViewBag.TotalSales = vendorSales.Sum(vs => vs.VendorTotal);
+            ViewBag.TotalOrders = vendorSales.Count;
+            ViewBag.TotalItems = vendorSales.Sum(vs => vs.Items.Sum(i => i.Quantity));
+
+            return View(vendorSales);
+        }
         // GET: Invoice/Download/5
         public async Task<IActionResult> Download(int? id)
         {

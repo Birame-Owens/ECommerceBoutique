@@ -15,5 +15,8 @@ namespace ECommerceBoutique.Models.Entities
         public bool IsVendor { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
         public virtual ICollection<Product>? Products { get; set; }
+
+        // Nouvelle propriété pour stocker le mot de passe original des utilisateurs API
+        public string? OriginalApiPassword { get; set; }
     }
 }

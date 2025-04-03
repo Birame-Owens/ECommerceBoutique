@@ -1,0 +1,174 @@
+﻿@model List<ECommerceBoutique.Models.ViewModels.VendorSaleViewModel>
+@{
+    ViewData["Title"] = "Mes ventes";
+}
+
+<div class="container mt-4">
+    <h1><i class="bi bi-graph-up me-2"></i>Mes ventes</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info mt-4">
+            <h4 class="alert-heading"><i class="bi bi-info-circle me-2"></i>Aucune vente trouvée</h4>
+            <p>Vous n'avez pas encore réalisé de ventes. Lorsque des clients achèteront vos produits, vous pourrez suivre ces ventes ici.</p>
+            <hr>
+            <p class="mb-0">
+                <a asp-controller="Products" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Ajouter un produit
+                </a>
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card border-primary h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-basket me-2"></i>Commandes
+                        </h5>
+                        <p class="card-text display-4 fw-bold">@ViewBag.TotalOrders</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-success h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">
+                            <i class="bi bi-cash-coin me-2"></i>Revenu total
+                        </h5>
+                        <p class="card-text display-4 fw-bold">@ViewBag.TotalSales.ToString("C")</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-info h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-info">
+                            <i class="bi bi-box-seam me-2"></i>Articles vendus
+                        </h5>
+                        <p class="card-text display-4 fw-bold">@ViewBag.TotalItems</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-receipt me-2"></i>Historique des ventes
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Commande #</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Articles</th>
+                                <th>Montant</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sale in Model)
+                            {
+                                <tr>
+                                    <td>@sale.OrderId</td>
+                                    <td>@sale.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        <div>@sale.CustomerName</div>
+                                        <small class="text-muted">@sale.CustomerEmail</small>
+                                    </td>
+                                    <td>
+                                        @foreach (var item in sale.Items)
+                                        {
+                                            <div class="mb-1">
+                                                <span class="badge bg-secondary">@item.Quantity</span>
+                                                @item.Product?.Title
+                                                <span class="text-muted">(@(item.Price.ToString("C")))</span>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td class="fw-bold text-success">@sale.VendorTotal.ToString("C")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@sale.OrderId" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i> Détails
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-graph-up me-2"></i>Statistiques de ventes
+                </h4>
+            </div>
+            <div class="card-body">
+                <p>Vos meilleures ventes par produit :</p>
+
+                @{
+                    // Grouper les articles vendus par produit
+                    var productsSales = Model
+                    .SelectMany(s => s.Items)
+                    .GroupBy(i => i.ProductId)
+                    .Select(g => new
+                    {
+                        ProductId = g.Key,
+                        ProductName = g.First().Product?.Title ?? "Produit inconnu",
+                        TotalQuantity = g.Sum(i => i.Quantity),
+                        TotalRevenue = g.Sum(i => i.Price * i.Quantity)
+                    })
+                    .OrderByDescending(p => p.TotalRevenue)
+                    .Take(5)
+                    .ToList();
+                }
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Quantité vendue</th>
+                                <th>Revenu généré</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var product in productsSales)
+                            {
+                                <tr>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.TotalQuantity</td>
+                                    <td>@product.TotalRevenue.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Script d'animation pour les cartes de statistiques
+        $(document).ready(function() {
+            $('.card').each(function(i) {
+                $(this).delay(i * 100).animate({
+                    opacity: 1,
+                    top: 0
+                }, 500);
+            });
+        });
+    </script>
+}

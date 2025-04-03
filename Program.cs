@@ -20,16 +20,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Configuration d'Identity avec User personnalisé
+// Dans Program.cs - Assouplir complètement les règles de mot de passe
+// Configuration d'Identity avec User personnalisé et règles de mot de passe assouplies
 builder.Services.AddIdentity<User, IdentityRole>(options => {
-    options.SignIn.RequireConfirmedAccount = false; // Modifier selon les besoins
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = false;         // Ne pas exiger de chiffres
+    options.Password.RequiredLength = 3;           // Longueur minimale très courte pour accepter les mots de passe de l'API
+    options.Password.RequireNonAlphanumeric = false; // Ne pas exiger de caractères spéciaux
+    options.Password.RequireUppercase = false;     // Ne pas exiger de majuscules
+    options.Password.RequireLowercase = false;     // Ne pas exiger de minuscules
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders()
-.AddDefaultUI();
-
+.AddDefaultTokenProviders();
 // Configuration des cookies
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -55,6 +57,12 @@ builder.Services.AddHttpClient<ProductApiService>();
 
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+// Ajout du service HTTP Client
+builder.Services.AddHttpClient<UserImportService>();
+
+// Enregistrement du service d'importation d'utilisateurs
+builder.Services.AddScoped<UserImportService>();
 
 
 // Ajout des contrôleurs, des vues et des pages Razor
